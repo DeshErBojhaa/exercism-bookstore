@@ -1,27 +1,25 @@
+// Package bookstore
+// Generic solution works for all discounts. Uses dynamic programming.
 package bookstore
-
-import "math"
 
 var (
 	costs = []int{0, 800, 1600 - 80, 2400 - 240, 3200 - 640, 4000 - 1000}
-	dp    = map[struct {
-		taken int
-		count [5]int
-	}]int{}
+	dp    = map[[5]int]int{}
 )
 
 func rec(taken int, cnt [5]int) int {
-	if taken == 0 {
+	rem := 0
+	for _, c := range cnt {
+		rem += c
+	}
+	if rem == 0 {
 		return 0
 	}
-	key := struct {
-		taken int
-		count [5]int
-	}{taken: taken, count: cnt}
-	if ans, ok := dp[key]; ok {
+
+	if ans, ok := dp[cnt]; ok {
 		return ans
 	}
-	ans := math.MaxInt32
+	ans := 1 << 31
 	for mask := 1; mask < (1 << 5); mask++ {
 		n, copyCnt := 0, cnt
 		for i := 0; i < 5; i++ {
@@ -40,7 +38,7 @@ func rec(taken int, cnt [5]int) int {
 		}
 		cnt = copyCnt
 	}
-	dp[key] = ans
+	dp[cnt] = ans
 	return ans
 }
 
